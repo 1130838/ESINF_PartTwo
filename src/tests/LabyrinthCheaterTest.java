@@ -2,9 +2,11 @@ package tests;
 
 import graphbase.Vertex;
 import graphexamples.LabyrinthCheater;
+import model.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import static org.junit.Assert.*;
@@ -21,14 +23,14 @@ public class LabyrinthCheaterTest {
 
 
         // insert vertices from A to E with no exits
-        for(char c = 'A'; c < 'E'; c++)
+        for (char c = 'A'; c < 'D'; c++)
             map.insertRoom(String.valueOf(c), false);
 
         // vertice E has a exit
         map.insertRoom("E", true);
 
         // insert vertices from F to J with no exits
-        for(char c = 'F'; c < 'J'; c++)
+        for (char c = 'F'; c < 'I'; c++)
             map.insertRoom(String.valueOf(c), false);
 
         // vertice J has a exit
@@ -38,7 +40,7 @@ public class LabyrinthCheaterTest {
         map.insertRoom("K", true);
 
         // insert vertices from L to S with no exits
-        for(char c = 'L'; c < 'S'; c++)
+        for (char c = 'L'; c < 'R'; c++)
             map.insertRoom(String.valueOf(c), false);
 
         // vertice E has a exit
@@ -76,6 +78,7 @@ public class LabyrinthCheaterTest {
      * Since it«s not allowed to repeat the key of map (Vertice), by inserting a new
      * Vertice in the temporary created map the method (boolean return) should return true
      * and by inserting a existing Vertice the method should return false.
+     *
      * @throws Exception
      */
     @Test
@@ -89,26 +92,42 @@ public class LabyrinthCheaterTest {
         assertTrue(tempMap.insertRoom("A", false));
 
         System.out.println("Inserting a existing Vertice - should return false");
-       // assertFalse(tempMap.map.checkVertex(v));
+        assertFalse(tempMap.insertRoom("A", false));
+
+        // assertFalse(tempMap.map.checkVertex(v));
     }
 
     @Test
     public void testInsertDoor() throws Exception {
-      //  fail("Not implemented yet.");
+        int antes = map.map.numEdges();
+        boolean teste = map.insertDoor("B", "C");
+
+       // TimeUnit week = TimeUnit.week;
+        int dayValue = TimeUnit.day.getValue();
+        int weekValue = TimeUnit.week.getValue();
+
+        System.out.println("day = " + dayValue + " days");
+        System.out.println("week = " + weekValue + " days");
+
+
+        int depois = map.map.numEdges();
+
+        assertEquals(antes + 1, depois);
+        //  fail("Not implemented yet.");
     }
 
     @Test
     public void testRoomsInReach() throws Exception {
-       // fail("Not implemented yet.");
+        // fail("Not implemented yet.");
     }
 
     @Test
     public void testNearestExit() throws Exception {
-       // fail("Not implemented yet.");
+        // fail("Not implemented yet.");
     }
 
     @Test
     public void testPathToExit() throws Exception {
-       // fail("Not implemented yet.");
+        // fail("Not implemented yet.");
     }
 }

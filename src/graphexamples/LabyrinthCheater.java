@@ -5,6 +5,7 @@ import graph.AdjacencyMatrixGraph;
 import graphbase.Vertex;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  * A class to represent a labyrinth map with rooms, doors and exits
@@ -34,7 +35,31 @@ public class LabyrinthCheater {
 
         }
 
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            return hash;
+        }
+
+        // necessário fazer override do método equals para saber se os Rooms têm as mesma referencia
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Room other = (Room) obj;
+            if (!Objects.equals(this.name, other.name)) {
+                return false;
+            }
+            return true;
+        }
+
+
     }
+
 
 
     private class Door{

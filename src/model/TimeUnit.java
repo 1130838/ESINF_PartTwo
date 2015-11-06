@@ -5,5 +5,18 @@ package model;
  */
 public enum TimeUnit {
 
-    hour, day, week, month, year;
+    hour(24), day(1), week(7), month(30), year(365);
+    public int value;
+
+    private TimeUnit(int value) {
+        this.value = value;
+
+    }
+
+    public int getValue(){
+        return this.value;
+
+    }
+
+
 }
