@@ -1,9 +1,12 @@
 package model;
 
 import graphbase.Graph;
+import graphbase.Vertex;
 
 import java.util.ArrayList;
 import java.util.IntSummaryStatistics;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 /**
  * Created by bruno.devesa on 04/11/2015.
@@ -23,12 +26,12 @@ public class PertCpm {
         this.matrix = new ArrayList<>();
         this.updated = false;
 
-        this.startActivity = new FixedCostActivity("Start", ActivityType.FCA, "Start", 0, TimeUnit.day, 0, null);
-        this.finishActivity = new FixedCostActivity("Finish", ActivityType.FCA, "Finish", 0, TimeUnit.day, 0, null);
+        this.startActivity = new FixedCostActivity("Start", ActivityType.FCA, "Start", 0, TimeUnit.day, 0, new ArrayList<>());
+        this.finishActivity = new FixedCostActivity("Finish", ActivityType.FCA, "Finish", 0, TimeUnit.day, 0, new ArrayList<>());
 
         // always add in the initialization this 2 virtual vertices ( start and finish )
-        this.addActivity(startActivity);
-        this.addActivity(finishActivity);
+        addActivity(startActivity);
+        addActivity(finishActivity);
 
     }
 
@@ -52,6 +55,52 @@ public class PertCpm {
     public void addLink(Activity activity1, Activity activity2) {
         activityGraph.insertEdge(activity1, activity2, null, 0);
         this.updated = false;
+    }
+
+
+    /**
+     * Creates the connections (Edges) between the vertices with no preceding activities to the Start Vertice
+     * and the create the connections with vertices with no outgoing Activites with the Finish Vertice.
+     * The result will be the final graph with all the Vertices and Edges linked.
+     */
+    public void createGraph(){
+
+        LinkedHashMap<String,Activity> activityMap = activityRecord.getMap();
+
+        Iterator<Activity> iterator = activityMap.values().iterator();
+
+        // se nao tiver preceding activites, ele liga eles todos com o Vertice Start
+        while (iterator.hasNext()) {
+
+            Activity activityTemp = iterator.next();
+            if (activityTemp.getPreceding_activities().isEmpty()){
+
+                this.addLink(startActivity, activityTemp);
+            }
+            // se tiver precedentes ele vai chamar o addLink( que chama o AddEdge da classe generica )
+            // que já introduz no mapa os Vertices ( se nao existirem ) e a ligacao entre eles
+            else{
+                for (int i = 0; i < activityTemp.getPreceding_activities().size(); i++) {
+                    Activity precedingActivity = activityMap.get(i);
+
+                    addLink(precedingActivity, activityTemp);
+                }
+            }
+        }
+
+        // se nao tiver outgoing activites, ele liga eles todos com o Vertice Finish
+    Iterator<Vertex<Activity,Integer>> iterator2 = activityGraph.vertices().iterator();
+
+        while(iterator2.hasNext()){
+
+            Vertex<Activity,Integer> verticeTemp = iterator2.next();
+
+            Activity activityTemp = verticeTemp.getElement();
+            if (activityTemp != finishActivity && verticeTemp.getOutgoing().isEmpty()){
+                addLink(activityTemp, finishActivity);
+            }
+        }
+
     }
 
 }

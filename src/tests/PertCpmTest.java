@@ -1,6 +1,7 @@
-package model;
+package tests;
 
 import graphbase.Vertex;
+import model.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +71,6 @@ public class PertCpmTest {
 
         int expected = 1; // vca1 ---(1)--- vca1
         int result = instance.getActivityGraph().numEdges();
-        System.out.println("numEdges = " + result);
         assertEquals(expected, result);
 
         // add one more Activity and edge
@@ -83,4 +83,25 @@ public class PertCpmTest {
         assertEquals(expected2, result2);
 
     }
+
+        @Test
+        public void testCreateGraph() throws Exception {
+
+            System.out.println("## createGraph Test ##");
+
+            PertCpm instance = new PertCpm(activityRecord);
+            activityRecord.addActivity(vca1);
+            activityRecord.addActivity(fca1);
+
+            instance.createGraph();
+            int expected = 4;
+            int result = instance.getActivityGraph().numEdges();
+
+            assertEquals(expected, result);
+
+
+
+        }
+
+
 }

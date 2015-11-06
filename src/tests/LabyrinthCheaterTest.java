@@ -102,12 +102,12 @@ public class LabyrinthCheaterTest {
         int antes = map.map.numEdges();
         boolean teste = map.insertDoor("B", "C");
 
-       // TimeUnit week = TimeUnit.week;
-        int dayValue = TimeUnit.day.getValue();
+       // Testing dayValue ( to get all time units in days )
+      /*  int dayValue = TimeUnit.day.getValue();
         int weekValue = TimeUnit.week.getValue();
 
         System.out.println("day = " + dayValue + " days");
-        System.out.println("week = " + weekValue + " days");
+        System.out.println("week = " + weekValue + " days");*/
 
 
         int depois = map.map.numEdges();

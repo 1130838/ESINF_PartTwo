@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +32,10 @@ public abstract class Activity {
         this.duration = duration;
         this.time_unit = time_unit;
         this.preceding_activities = preceding_activities;
+        // prevent null preceding activities
+        if (preceding_activities == null) {
+            this.preceding_activities =  new ArrayList<String>();
+        }
     }
 
     /**
@@ -39,6 +44,15 @@ public abstract class Activity {
      */
     public String getKey() {
         return key;
+    }
+
+    /**
+     *
+     * @return preceding activities
+     */
+    public List<String> getPreceding_activities() {
+
+        return preceding_activities;
     }
 
     /**
