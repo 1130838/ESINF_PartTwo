@@ -20,6 +20,15 @@ public class PertCpmTest {
     VariableCostActivity vca1 = new VariableCostActivity("A", ActivityType.VCA, "ActivityOneVCA", 1, TimeUnit.day, 30, 112, null);
     FixedCostActivity fca1 = new FixedCostActivity("B", ActivityType.FCA, "ActivityTwoFCA", 4, TimeUnit.day, 2500, null);
     FixedCostActivity fca2 = new FixedCostActivity("C", ActivityType.FCA, "ActivityThreeFCA", 2, TimeUnit.week, 1250, new ArrayList<>(Arrays.asList("B")));
+    //(fca will have fca1 as a preceding activitie:)
+
+    /*
+
+    Start ---- A -----Finish
+           \            /
+            \ B --- C /
+     */
+
 
     @Before
     public void setUp() throws Exception {
@@ -69,7 +78,7 @@ public class PertCpmTest {
 
         instance.addLink(vca1, fca1);
 
-        int expected = 1; // vca1 ---(1)--- vca1
+        int expected = 1; // vca1 ---(1)--- fca1
         int result = instance.getActivityGraph().numEdges();
         assertEquals(expected, result);
 
@@ -81,27 +90,78 @@ public class PertCpmTest {
         int expected2 = 2; // 2 =  vca1---(1)--- fca1 --- (2) ---- fca2
         int result2 = instance.getActivityGraph().numEdges();
         assertEquals(expected2, result2);
-
     }
 
+    /**
+     *
+     * @throws Exception
+     */
         @Test
         public void testCreateGraph() throws Exception {
 
-            System.out.println("## createGraph Test ##");
+            System.out.println("## createGraph Test with NO preceding activities ##");
 
             PertCpm instance = new PertCpm(activityRecord);
             activityRecord.addActivity(vca1);
             activityRecord.addActivity(fca1);
 
             instance.createGraph();
-            int expected = 4;
-            int result = instance.getActivityGraph().numEdges();
+            /*
 
-            assertEquals(expected, result);
+            Start ---- A -----Finish
+                 \            /
+                  \         /
+                   \   B  /
+            */
+
+            int expectedNumEdges = 4; // 4 = Start --(1)--- vca1---(2)--- fca1 --- (3) ---- Finish
+            int resultNUmEdges = instance.getActivityGraph().numEdges();
+
+            assertEquals(expectedNumEdges, resultNUmEdges);
+
+            int expectedNumVertices = 4; // 4 = Start(1)--- vca1(2)--- fca1(3) ----  Finish(4)
+            int resultNumVertices = instance.getActivityGraph().numVertices();
+
+            assertEquals(expectedNumVertices, resultNumVertices);
 
 
+            // 5 = Start(1)--- vca1(2)--- fca1(3) ---- fca2(4) ---- Finish(5)
 
         }
 
+    /**
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCreateGraph2() throws Exception {
+
+        System.out.println("## createGraph Test with preceding activities ##");
+
+        PertCpm instance = new PertCpm(activityRecord);
+        activityRecord.addActivity(fca1);
+        activityRecord.addActivity(fca2);
+
+        instance.createGraph();
+            /*
+
+            Start ---fca1(B)    Finish
+                      |        /
+                      |      /
+                    fca2(C)
+            */
+
+        int expectedNumEdges = 3;
+        int resultNUmEdges = instance.getActivityGraph().numEdges();
+
+        assertEquals(expectedNumEdges, resultNUmEdges);
+
+        int expectedNumVertices = 4;
+        int resultNumVertices = instance.getActivityGraph().numVertices();
+
+        assertEquals(expectedNumVertices, resultNumVertices);
+
+
+    }
 
 }

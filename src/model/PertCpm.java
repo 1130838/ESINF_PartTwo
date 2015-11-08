@@ -1,6 +1,7 @@
 package model;
 
 import graphbase.Graph;
+import graphbase.GraphAlgorithms;
 import graphbase.Vertex;
 
 import java.util.ArrayList;
@@ -73,16 +74,18 @@ public class PertCpm {
         while (iterator.hasNext()) {
 
             Activity activityTemp = iterator.next();
-            if (activityTemp.getPreceding_activities().isEmpty()){
+            if (activityTemp.getPreceding_activities().isEmpty()
+                   // && !GraphAlgorithms.BreadthFirstSearch(activityGraph,startActivity).contains(activityTemp)
+                    ) {
 
                 this.addLink(startActivity, activityTemp);
             }
             // se tiver precedentes ele vai chamar o addLink( que chama o AddEdge da classe generica )
             // que já introduz no mapa os Vertices ( se nao existirem ) e a ligacao entre eles
             else{
-                for (int i = 0; i < activityTemp.getPreceding_activities().size(); i++) {
-                    Activity precedingActivity = activityMap.get(i);
 
+                for (String s : activityTemp.getPreceding_activities()) {
+                    Activity precedingActivity = activityMap.get(s);
                     addLink(precedingActivity, activityTemp);
                 }
             }
@@ -96,8 +99,11 @@ public class PertCpm {
             Vertex<Activity,Integer> verticeTemp = iterator2.next();
 
             Activity activityTemp = verticeTemp.getElement();
-            if (activityTemp != finishActivity && verticeTemp.getOutgoing().isEmpty()){
+            if (activityTemp != startActivity // to not connect Start with Finish
+                    && activityTemp != finishActivity
+                    && verticeTemp.getOutgoing().isEmpty()){
                 addLink(activityTemp, finishActivity);
+                System.out.println("test: added activitie " + activityTemp.getKey() + " to finish");
             }
         }
 

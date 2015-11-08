@@ -33,9 +33,23 @@ public class Graph<V,E> implements GraphInterface<V,E> {
     
     public int numEdges(){ return numEdge; }
     
-    public Iterable<Edge<V,E>> edges() { 
-        
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Iterable<Edge<V,E>> edges() {
+
+
+        ArrayList<Edge<V, E>> allBranches = new ArrayList<>();
+
+        for (Vertex<V, E> v : listVert) {
+            Map<Vertex<V, E>, Edge<V, E>> ramosDesteVertice = v.getOutgoing();
+            Iterator it = ramosDesteVertice.entrySet().iterator();
+
+            while (it.hasNext()) {  //o entry faz parte do Map, para guardar o elemento que estmaos a percorrer (Key+value)
+                Map.Entry thisEntry = (Map.Entry) it.next();
+                allBranches.add((Edge<V, E>) thisEntry.getValue());////duvidas
+
+            }
+        }
+        return allBranches;
+       // throw new UnsupportedOperationException("Not supported yet.");
     }
     
     public Edge<V,E> getEdge(Vertex<V,E> vorig, Vertex<V,E> vdest){
@@ -52,8 +66,17 @@ public class Graph<V,E> implements GraphInterface<V,E> {
     }
     
     public Vertex<V,E> opposite(Vertex<V,E> vert, Edge<V,E> e){
-        
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (listVert.contains(vert)) {
+            if (e.getVOrig() == vert) {
+                return e.getVDest(); //se é origem devolve destino
+            } else if (e.getVDest() == vert) {
+                return e.getVOrig();//se é destino devolve origem
+            }
+            return null;        //este null significa que o ramo não liga aquele vértice
+        }
+        return null;            //vértice não faz parte do grafo
+
+        //throw new UnsupportedOperationException("Not supported yet.");
     }
     
     public int outDegree(Vertex<V,E> v){
@@ -150,7 +173,7 @@ public class Graph<V,E> implements GraphInterface<V,E> {
             } 
     }
            
-    public Vertex<V,E> getVertex(V vInf){
+    public Vertex<V,E>  getVertex(V vInf){
         
         for (Vertex<V,E> vert : this.listVert)  
             if (vInf.equals(vert.getElement()))
