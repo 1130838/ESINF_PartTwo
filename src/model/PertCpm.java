@@ -75,7 +75,7 @@ public class PertCpm {
 
             Activity activityTemp = iterator.next();
             if (activityTemp.getPreceding_activities().isEmpty()
-                   // && !GraphAlgorithms.BreadthFirstSearch(activityGraph,startActivity).contains(activityTemp)
+                    && !GraphAlgorithms.BreadthFirstSearch(activityGraph,startActivity).contains(activityTemp) // se nao contem os visitados
                     ) {
 
                 this.addLink(startActivity, activityTemp);

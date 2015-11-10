@@ -89,9 +89,9 @@ public class ActivityRecordTest {
 
         Iterator iterator = set.iterator();
         while(iterator.hasNext()) {
-            Map.Entry mentry = (Map.Entry)iterator.next();
+            Map.Entry myEntry = (Map.Entry)iterator.next();
 
-            String expected_value = mentry.getValue().toString();
+            String expected_value = myEntry.getValue().toString();
             String result_value = instance.getActivityByKey(activity1.getKey()).toString();
 
             assertEquals(expected_value, result_value);
