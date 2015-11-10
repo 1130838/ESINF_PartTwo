@@ -119,6 +119,40 @@ public class GraphTest {
     @Test
     public void testOpposite() throws Exception {
 
+        Vertex<String,String> vert1=instance.insertVertex("A");
+        Vertex<String,String> vert2=instance.insertVertex("B");
+        Vertex<String,String> vert3=instance.insertVertex("C");
+
+        Edge<String,String> edge1=instance.insertEdge("A", "B", "Edge1", 6);
+        Edge<String,String> edge2=instance.insertEdge("A","C","Edge2",1);
+        Edge<String,String> edge3=instance.insertEdge("B", "C", "Edge3", 4);
+
+        /* model:
+
+        (A) --> (B)
+          \     |
+           \    |
+            v   v
+             (C)
+
+         */
+
+        System.out.println("opposite of Vertice A with edge 1 should be B");
+        Vertex expected = vert2; // B
+        Vertex result = instance.opposite(vert1, edge1);
+
+        assertEquals(expected, result);
+
+        //---------
+
+        System.out.println("opposite of Vertice A with edge 2 should be C");
+        Vertex expected1 = vert3; // C
+        Vertex result1 = instance.opposite(vert1, edge2);
+
+        assertEquals(expected1, result1);
+
+
+
     }
 
     @Test
@@ -128,6 +162,46 @@ public class GraphTest {
 
     @Test
     public void testInDegree() throws Exception {
+
+        Vertex<String,String> vert1=instance.insertVertex("A");
+        Vertex<String,String> vert2=instance.insertVertex("B");
+        Vertex<String,String> vert3=instance.insertVertex("C");
+
+        Edge<String,String> edge1=instance.insertEdge("A", "B", "Edge1", 6);
+        Edge<String,String> edge2=instance.insertEdge("A","C","Edge2",1);
+        Edge<String,String> edge3=instance.insertEdge("B", "C", "Edge3", 4);
+
+        /* model:
+
+        (A) --> (B)
+          \     |
+           \    |
+            v   v
+             (C)
+
+         */
+
+        System.out.println("degree of Vertice vert1(A) should be 0");
+        int expected = 0;
+        int result = instance.inDegree(vert1);
+
+        assertEquals(expected, result);
+
+        // -----------
+
+        System.out.println("degree of Vertice vert2(B) should be 1");
+        int expected2 = 1;
+        int result2 = instance.inDegree(vert2);
+
+        assertEquals(expected2, result2);
+
+        // -----------
+
+        System.out.println("degree of Vertice vert3(C) should be 2");
+        int expected3 = 2;
+        int result3 = instance.inDegree(vert3);
+
+        assertEquals(expected3, result3);
 
     }
 

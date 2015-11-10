@@ -92,13 +92,13 @@ public class Graph<V, E> implements GraphInterface<V, E> {
     public Vertex<V, E> opposite(Vertex<V, E> vert, Edge<V, E> e) {
         if (verticesList.contains(vert)) {
             if (e.getVOrig() == vert) {
-                return e.getVDest(); //se é origem devolve destino
+                return e.getVDest(); //if its source, returns destiny
             } else if (e.getVDest() == vert) {
-                return e.getVOrig();//se é destino devolve origem
+                return e.getVOrig();////if its destiny, returns source
             }
-            return null;        //este null significa que o ramo não liga aquele vértice
+            return null;        //this means that the branch do NOT connect to that Vertice(vOrig)
         }
-        return null;            //vértice não faz parte do grafo
+        return null;            //this means that vertice not belongs to graph
 
         //throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -113,7 +113,20 @@ public class Graph<V, E> implements GraphInterface<V, E> {
 
     public int inDegree(Vertex<V, E> v) {
 
-        throw new UnsupportedOperationException("Not supported yet.");
+        int exitLevel = 0;
+        if (v.getElement() != null) {
+            if (verticesList.contains(v)) {
+                for (Vertex<V, E> vertice : verticesList) {
+                    if (vertice.getOutgoing().containsKey(v)) {
+                        exitLevel++;
+                    }
+                }
+            }
+            return exitLevel;
+        }
+        return -1;
+
+        //throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public Iterable<Edge<V, E>> outgoingEdges(Vertex<V, E> v) {
