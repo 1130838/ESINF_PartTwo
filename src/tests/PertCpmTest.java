@@ -164,4 +164,102 @@ public class PertCpmTest {
 
     }
 
+
+    /**
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testValidateGraph1() throws Exception {
+
+        System.out.println("## ValidateGraph Test with importing file and with no cycles ##");
+
+        /*
+
+        file content activities-test :
+        A,VCA,High level analysis,1,week,30,112
+        B,FCA,Order Hardware platform,4,week,2500
+        C,FCA,Installation and commissioning of hardware,2,week,1250,B
+        D,VCA,Detailed analysis of core modules,3,week,30,162,A
+
+         */
+
+
+               /*
+
+            Start --- > vca(A) ---- > vca(D )---->   Finish
+                  \                                ^
+                   \                             /
+                    v                          /
+                      fca2(B)-------- > vca(E)
+            */
+
+        System.out.println("Graph with no cycles should be validated ( return true )");
+        ActivityRecord activityRecordFromFile = new ActivityRecord();
+        activityRecord.CreateActivitiesFromFileData("activities-test"); // importing graph from file
+
+        PertCpm instance = new PertCpm(activityRecordFromFile);
+
+        instance.createGraph();
+
+
+        boolean expected1 = true;
+        boolean result1 = instance.validateGraph();
+
+        assertEquals(expected1, result1);
+
+
+    }
+
+
+    @Test
+    public void testValidateGraph2() throws Exception {
+
+        System.out.println("## ValidateGraph Test with importing file and with cycles ##");
+
+        /*
+
+        file content activities-test :
+        A,VCA,High level analysis,1,week,30,112
+        B,FCA,Order Hardware platform,4,week,2500,E
+        C,FCA,Installation and commissioning of hardware,2,week,1250,B
+        D,VCA,Detailed analysis of core modules,3,week,30,162,A
+        E,VCA,Extensive analysis of core run,3,week,30,162,C
+
+         */
+
+
+               /*
+
+            Start --- > vca(A) ---- > vca(D )---->   Finish
+                  \                                ^
+                   \                             /
+                    v                          /
+                      fca2(B)-------- > vca(E)
+                         ^               /
+                          \            /
+                           \         v
+                             fca(E)
+            */
+
+        System.out.println("Graph with no cycles should NOT be validated ( return false )");
+        ActivityRecord activityRecordFromFileWithCycles = new ActivityRecord();
+        activityRecord.CreateActivitiesFromFileData("activities-test-cycles"); // importing graph from file
+
+        PertCpm instance = new PertCpm(activityRecordFromFileWithCycles);
+
+        instance.createGraph();
+
+
+        boolean expected2 = false;
+        boolean result2 = instance.validateGraph();
+
+        assertEquals(expected2, result2);
+
+
+    }
+
+
+
+
 }

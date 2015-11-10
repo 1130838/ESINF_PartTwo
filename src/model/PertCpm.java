@@ -4,10 +4,7 @@ import graphbase.Graph;
 import graphbase.GraphAlgorithms;
 import graphbase.Vertex;
 
-import java.util.ArrayList;
-import java.util.IntSummaryStatistics;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 /**
  * Created by bruno.devesa on 04/11/2015.
@@ -64,9 +61,9 @@ public class PertCpm {
      * and the create the connections with vertices with no outgoing Activites with the Finish Vertice.
      * The result will be the final graph with all the Vertices and Edges linked.
      */
-    public void createGraph(){
+    public void createGraph() {
 
-        LinkedHashMap<String,Activity> activityMap = activityRecord.getMap();
+        LinkedHashMap<String, Activity> activityMap = activityRecord.getMap();
 
         Iterator<Activity> iterator = activityMap.values().iterator();
 
@@ -75,14 +72,14 @@ public class PertCpm {
 
             Activity activityTemp = iterator.next();
             if (activityTemp.getPreceding_activities().isEmpty()
-                    && !GraphAlgorithms.BreadthFirstSearch(activityGraph,startActivity).contains(activityTemp) // se nao contem os visitados
+                    && !GraphAlgorithms.BreadthFirstSearch(activityGraph, startActivity).contains(activityTemp) // se nao contem os visitados
                     ) {
 
                 this.addLink(startActivity, activityTemp);
             }
             // se tiver precedentes ele vai chamar o addLink( que chama o AddEdge da classe generica )
-            // que j· introduz no mapa os Vertices ( se nao existirem ) e a ligacao entre eles
-            else{
+            // que j√° introduz no mapa os Vertices ( se nao existirem ) e a ligacao entre eles
+            else {
 
                 for (String s : activityTemp.getPreceding_activities()) {
                     Activity precedingActivity = activityMap.get(s);
@@ -92,20 +89,52 @@ public class PertCpm {
         }
 
         // se nao tiver outgoing activites, ele liga eles todos com o Vertice Finish
-    Iterator<Vertex<Activity,Integer>> iterator2 = activityGraph.vertices().iterator();
+        Iterator<Vertex<Activity, Integer>> iterator2 = activityGraph.vertices().iterator();
 
-        while(iterator2.hasNext()){
+        while (iterator2.hasNext()) {
 
-            Vertex<Activity,Integer> verticeTemp = iterator2.next();
+            Vertex<Activity, Integer> verticeTemp = iterator2.next();
 
             Activity activityTemp = verticeTemp.getElement();
-            if (activityTemp != startActivity // to not connect Start with Finish
-                    && activityTemp != finishActivity
-                    && verticeTemp.getOutgoing().isEmpty()){
+            if (activityTemp != finishActivity // to not connect Start with Finish
+                    && verticeTemp.getOutgoing().isEmpty() // if does not have outgoing vertices
+                    ) {
                 addLink(activityTemp, finishActivity);
                 System.out.println("test: added activitie " + activityTemp.getKey() + " to finish");
             }
         }
+
+        validateGraph();
+    }
+
+    public boolean validateGraph() {
+        //checking if i can reach all vertices from Start to Finish
+        int test = GraphAlgorithms.BreadthFirstSearch(activityGraph, startActivity).size();
+        if (GraphAlgorithms.BreadthFirstSearch(activityGraph, startActivity).size() == activityGraph.numVertices()) {
+            //checking for cyles;
+
+            if (!hasACycle()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+
+    }
+
+    public boolean hasACycle() {
+        Deque<Activity> pathReturned;
+        //if i cant reach a vertex through one of his outVertice then there is no cycle
+        for (Vertex<Activity, Integer> verticeActivity : activityGraph.vertices()) {
+            for (Vertex<Activity, Integer> vertActivity_Out : verticeActivity.getOutgoing().keySet()) {
+                pathReturned = GraphAlgorithms.BreadthFirstSearch(activityGraph, vertActivity_Out.getElement());
+                if (pathReturned.contains(verticeActivity.getElement())) {
+                    return true;
+                }
+            }
+        }
+        return false;
 
     }
 
