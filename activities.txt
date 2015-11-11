@@ -1,0 +1,12 @@
+A,VCA,High level analysis,1,week,30,112
+B,FCA,Order Hardware platform,4,week,2500
+C,FCA,Installation and commissioning of hardware,2,week,1250,B
+D,VCA,Detailed analysis of core modules,3,week,30,162,A
+E,VCA,Detailed analysis of supporting modules,2,week,30,108,D
+F,VCA,Programming of core modules,4,week,20,108,C,D
+G,VCA,Programming of supporting modules ,3,week,20,54,E,F
+H,VCA,Quality assurance of core modules,2,week,30,54,F
+I,VCA,Quality assurance of supporting modules,1,week,30,27,G
+J,FCA,Application Manual,1,week,550,G
+K,FCA,User Manual,1,week,750,G
+L,FCA,Core and supporting module training,2,week,1500,H,I,K

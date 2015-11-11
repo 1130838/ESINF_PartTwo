@@ -1,0 +1,6 @@
+A,VCA,High level analysis,1,week,30,112
+B,FCA,Order Hardware platform,4,week,2500
+C,FCA,Installation and commissioning of hardware,2,week,1250,B,E
+D,VCA,Detailed analysis of core modules,3,week,30,162,A
+E,VCA,testing cycles,3,week,30,162,C
+
