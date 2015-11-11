@@ -125,8 +125,6 @@ public class PertCpmTest {
             assertEquals(expectedNumVertices, resultNumVertices);
 
 
-            // 5 = Start(1)--- vca1(2)--- fca1(3) ---- fca2(4) ---- Finish(5)
-
         }
 
     /**
@@ -172,7 +170,7 @@ public class PertCpmTest {
     @Test
     public void testValidateGraph1() throws Exception {
 
-        System.out.println("## ValidateGraph Test with importing file and with no cycles ##");
+        System.out.println("## ValidateGraph1 Test with importing file and with no cycles ##");
 
         /*
 
@@ -191,22 +189,28 @@ public class PertCpmTest {
                   \                                ^
                    \                             /
                     v                          /
-                      fca2(B)-------- > vca(E)
+                      fca1(B)-------- > vca(E)
             */
 
         System.out.println("Graph with no cycles should be validated ( return true )");
         ActivityRecord activityRecordFromFile = new ActivityRecord();
-        activityRecord.CreateActivitiesFromFileData("activities-test"); // importing graph from file
+        activityRecordFromFile.CreateActivitiesFromFileData("activities-test"); // importing graph from file
 
         PertCpm instance = new PertCpm(activityRecordFromFile);
 
         instance.createGraph();
 
-
         boolean expected1 = true;
         boolean result1 = instance.validateGraph();
-
         assertEquals(expected1, result1);
+
+        int expectedNumEdges = 6;
+        int resultNUmEdges = instance.getActivityGraph().numEdges();
+        assertEquals(expectedNumEdges, resultNUmEdges);
+
+        int expectedNumVertex = 6;
+        int resultNumVertex = instance.getActivityGraph().numVertices();
+        assertEquals(expectedNumVertex, resultNumVertex);
 
 
     }
@@ -215,16 +219,16 @@ public class PertCpmTest {
     @Test
     public void testValidateGraph2() throws Exception {
 
-        System.out.println("## ValidateGraph Test with importing file and with cycles ##");
+        System.out.println("## ValidateGraph2 Test with importing file and with cycles ##");
 
         /*
 
         file content activities-test :
         A,VCA,High level analysis,1,week,30,112
-        B,FCA,Order Hardware platform,4,week,2500,E
-        C,FCA,Installation and commissioning of hardware,2,week,1250,B
+        B,FCA,Order Hardware platform,4,week,2500
+        C,FCA,Installation and commissioning of hardware,2,week,1250,B,E
         D,VCA,Detailed analysis of core modules,3,week,30,162,A
-        E,VCA,Extensive analysis of core run,3,week,30,162,C
+        E,VCA,testing cycles,3,week,30,162,C
 
          */
 
@@ -232,24 +236,24 @@ public class PertCpmTest {
                /*
 
             Start --- > vca(A) ---- > vca(D )---->   Finish
-                  \                                ^
-                   \                             /
-                    v                          /
-                      fca2(B)-------- > vca(E)
-                         ^               /
-                          \            /
-                           \         v
-                             fca(E)
+                  \
+                   \
+                    v
+                      fca2(B)-------- > vca(C)
+                                        /  ^
+                                      /  /
+                                    v   /
+                                   fca(E)
             */
+
 
         System.out.println("Graph with no cycles should NOT be validated ( return false )");
         ActivityRecord activityRecordFromFileWithCycles = new ActivityRecord();
-        activityRecord.CreateActivitiesFromFileData("activities-test-cycles"); // importing graph from file
+        activityRecordFromFileWithCycles.CreateActivitiesFromFileData("activities-test-cycles"); // importing graph from file
 
         PertCpm instance = new PertCpm(activityRecordFromFileWithCycles);
 
         instance.createGraph();
-
 
         boolean expected2 = false;
         boolean result2 = instance.validateGraph();
@@ -257,9 +261,15 @@ public class PertCpmTest {
         assertEquals(expected2, result2);
 
 
+        int expectedNumEdges = 7;
+        int resultNUmEdges = instance.getActivityGraph().numEdges();
+        assertEquals(expectedNumEdges, resultNUmEdges);
+
+        int expectedNumVertex = 7;
+        int resultNumVertex = instance.getActivityGraph().numVertices();
+        assertEquals(expectedNumVertex, resultNumVertex);
+
     }
-
-
 
 
 }

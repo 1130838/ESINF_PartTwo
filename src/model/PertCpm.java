@@ -100,7 +100,7 @@ public class PertCpm {
                     && verticeTemp.getOutgoing().isEmpty() // if does not have outgoing vertices
                     ) {
                 addLink(activityTemp, finishActivity);
-                System.out.println("test: added activitie " + activityTemp.getKey() + " to finish");
+                System.out.println("test: added activity " + activityTemp.getKey() + " to finish");
             }
         }
 
@@ -115,18 +115,17 @@ public class PertCpm {
 
             if (!hasACycle()) {
                 return true;
-            } else {
-                return false;
             }
         }
         return false;
 
     }
 
+    //if i can reach a vertex through of one of its outgoingVertices then there is a cycle
     public boolean hasACycle() {
         Deque<Activity> pathReturned;
         //if i cant reach a vertex through one of his outVertice then there is no cycle
-        for (Vertex<Activity, Integer> verticeActivity : activityGraph.vertices()) {
+        for (Vertex<Activity, Integer> verticeActivity : activityGraph.vertices()) { // vertices return list of all vertices
             for (Vertex<Activity, Integer> vertActivity_Out : verticeActivity.getOutgoing().keySet()) {
                 pathReturned = GraphAlgorithms.BreadthFirstSearch(activityGraph, vertActivity_Out.getElement());
                 if (pathReturned.contains(verticeActivity.getElement())) {

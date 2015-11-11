@@ -77,7 +77,7 @@ public class ActivityRecord {
         } else if (ActivityType.valueOf(activity.get(1)) == ActivityType.VCA) {
 
             ArrayList<String> precedingActivities = new ArrayList<>();
-            for (int i = 6; i < activity.size(); i++) {
+            for (int i = 7; i < activity.size(); i++) {
                 precedingActivities.add(activity.get(i));
             }
 

@@ -27,6 +27,8 @@ public class VariableCostActivity extends Activity{
         this.total_time=total_time;
     }
 
+
+
     /**
      * toString method to return the instance content
      * @return String
