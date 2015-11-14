@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -335,7 +336,7 @@ public class PertCpmTest {
             assertEquals(expectedVerticesPath1.get(i), resultVerticesPath1.get(i));
         }
 
-        
+
         // testing the size of all possible paths 
         int expectedSize = 2;
         int resultSize = expectAllPaths.size();
@@ -424,8 +425,34 @@ public class PertCpmTest {
 
         ArrayList<Activity> result = instance.activitiesByCompletion();
 
-        System.out.println("result : " + result);
+        System.out.println("-- Activities finished by completion ---");
+        for (int i = 0; i < result.size(); i++) {
+            System.out.println("result : " + result.get(i).getKey());
+        }
 
+        ArrayList<String> expected = new ArrayList<>();
+
+        expected.add("A");
+        expected.add("B");
+        expected.add("D");
+        expected.add("C");
+        expected.add("E");
+        expected.add("F");
+        expected.add("H");
+        expected.add("G");
+        expected.add("I");
+        expected.add("J");
+        expected.add("K");
+        expected.add("L");
+
+        // test the keys of the completed activities
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), result.get(i).getKey());
+
+        }
+
+        // test the size of both ArrayLists
+        assertEquals(expected.size(), result.size());
 
     }
 
@@ -433,6 +460,55 @@ public class PertCpmTest {
     @Test
     public void testCriticaPaths() throws Exception {
         System.out.println("## criticalPaths Test ##");
+
+        System.out.println("## activityByCompletion Test ##");
+
+        ActivityRecord activityRecordFromFile = new ActivityRecord();
+        activityRecordFromFile.CreateActivitiesFromFileData("activities-example"); // importing graph from file
+
+        PertCpm instance = new PertCpm(activityRecordFromFile);
+
+        instance.createGraph();
+
+        ArrayList<Deque<Activity>> resultCriticalPath = instance.criticalPaths();
+
+
+        System.out.println("\n--- All critical paths  (" + resultCriticalPath.size() + ")-------");
+
+        for (int i = 0; i < resultCriticalPath.size(); i++) {
+            System.out.println("## Critical Path " + (i + 1) + " ##");
+            Iterator it = resultCriticalPath.get(i).iterator();
+            while (it.hasNext()) {
+                Activity activity = (Activity) it.next();
+                System.out.println(activity.getKey());
+            }
+            System.out.println("----------------------");
+        }
+
+
+        // all possible Vertices of critical path
+        ArrayList<String> expectedCriticalPath = new ArrayList<>();
+
+        expectedCriticalPath.add("B");
+        expectedCriticalPath.add("C");
+        expectedCriticalPath.add("F");
+        expectedCriticalPath.add("G");
+        expectedCriticalPath.add("I");
+        expectedCriticalPath.add("K");
+        expectedCriticalPath.add("L");
+
+        // all possible vertices must be contained in the resultCriticalPaths
+        for (int i = 0; i < resultCriticalPath.size(); i++) {
+            for (int j = 0; j < expectedCriticalPath.size(); j++) {
+
+                if (resultCriticalPath.get(i).contains(expectedCriticalPath.get(j))) {
+                    assertTrue(true);
+                } else {
+                    assertFalse(false);
+                }
+            }
+        }
+
     }
 
 
