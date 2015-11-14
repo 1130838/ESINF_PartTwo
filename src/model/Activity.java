@@ -17,6 +17,8 @@ public abstract class Activity {
     private TimeUnit time_unit;
     private List<String> preceding_activities;
 
+
+
     /**
      * Constructor os Activity Class
      * @param key key
@@ -54,6 +56,10 @@ public abstract class Activity {
     public List<String> getPreceding_activities() {
 
         return preceding_activities;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     /**

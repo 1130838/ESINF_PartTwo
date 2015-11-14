@@ -263,10 +263,13 @@ public class PertCpm {
     }
 
 
-    public ArrayList<Integer> allPaths(ArrayList<Deque<Activity>> paths) {
+    public  ArrayList<Deque<Activity>> allPaths() {
 
-        ArrayList<Deque<Activity>> allPaths = GraphAlgorithms.allPaths(activityGraph, startActivity, finishActivity);
-        paths.addAll(allPaths);
+        ArrayList<Deque<Activity>> pathsResult = GraphAlgorithms.allPaths(activityGraph, startActivity, finishActivity);
+       return  pathsResult;
+
+
+       /* paths.addAll(allPaths);
 
         //convert ArrayList<Deque<Activity>> in  ArrayList<Integer>
         ArrayList<Integer> pathsArrayList = new ArrayList<>();
@@ -275,7 +278,7 @@ public class PertCpm {
             pathsArrayList.add(i, paths.get(i).size() - 2);
         }
 
-        return pathsArrayList;
+        return pathsArrayList;*/
     }
 
 

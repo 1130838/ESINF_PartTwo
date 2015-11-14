@@ -8,10 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.Iterator;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -282,6 +279,26 @@ public class PertCpmTest {
     public void testAllPaths() throws Exception {
         System.out.println("## allPaths Test ##");
 
+            /*
+
+        file content activities-test :
+        A,VCA,High level analysis,1,week,30,112
+        B,FCA,Order Hardware platform,4,week,2500
+        C,FCA,Installation and commissioning of hardware,2,week,1250,B
+        D,VCA,Detailed analysis of core modules,3,week,30,162,A
+
+         */
+
+               /*
+
+            Start --- > vca(A) ---- > vca(D )---->   Finish
+                  \                                ^
+                   \                             /
+                    v                          /
+                      fca1(B)-------- > vca(C)
+            */
+
+
         ActivityRecord activityRecordFromFile = new ActivityRecord();
         activityRecordFromFile.CreateActivitiesFromFileData("activities-test"); // importing graph from file
 
@@ -289,12 +306,40 @@ public class PertCpmTest {
 
         instance.createGraph();
 
-        ArrayList<Deque<Activity>> pathsDeque = new ArrayList<>();
 
-        ArrayList<Integer> expectAllPaths = instance.allPaths(pathsDeque);
+        ArrayList<Deque<Activity>> expectAllPaths = instance.allPaths();
 
-        ArrayList<Integer> expResult = new ArrayList<Integer>(Arrays.asList(2, 2));
-        assertEquals(expectAllPaths, expResult);
+        ArrayList<String> resultVerticesPath1 = new ArrayList<>();
+
+        System.out.println("\n--- all possible paths  (" + expectAllPaths.size() + ")-------");
+
+        for (int i = 0; i < expectAllPaths.size(); i++) {
+            System.out.println("## Path " + (i + 1) + " ##");
+            Iterator it = expectAllPaths.get(i).iterator();
+            while (it.hasNext()) {
+                Activity activity = (Activity) it.next();
+                resultVerticesPath1.add(activity.getKey());
+                System.out.println(activity.getKey());
+            }
+            System.out.println("----------------------");
+        }
+
+
+        // testing the first path content
+        ArrayList<String> expectedVerticesPath1 = new ArrayList<>();
+        expectedVerticesPath1.add("Start");
+        expectedVerticesPath1.add("A");
+        expectedVerticesPath1.add("D");
+        expectedVerticesPath1.add("Finish");
+        for (int i = 0; i < expectAllPaths.size(); i++) {
+            assertEquals(expectedVerticesPath1.get(i), resultVerticesPath1.get(i));
+        }
+
+        
+        // testing the size of all possible paths 
+        int expectedSize = 2;
+        int resultSize = expectAllPaths.size();
+        assertEquals(expectedSize, resultSize);
 
     }
 
