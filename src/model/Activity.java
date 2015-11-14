@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by bruno.devesa on 19/10/2015.
@@ -70,4 +71,11 @@ public abstract class Activity {
     }
 
 
+    public float getDuration() {
+        return duration;
+    }
+
+    public TimeUnit getTime_unit() {
+        return time_unit;
+    }
 }

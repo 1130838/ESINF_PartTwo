@@ -1,13 +1,17 @@
 package tests;
 
+import graphbase.Graph;
 import graphbase.Vertex;
 import model.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
@@ -93,19 +97,18 @@ public class PertCpmTest {
     }
 
     /**
-     *
      * @throws Exception
      */
-        @Test
-        public void testCreateGraph() throws Exception {
+    @Test
+    public void testCreateGraph() throws Exception {
 
-            System.out.println("## createGraph Test with NO preceding activities ##");
+        System.out.println("## createGraph Test with NO preceding activities ##");
 
-            PertCpm instance = new PertCpm(activityRecord);
-            activityRecord.addActivity(vca1);
-            activityRecord.addActivity(fca1);
+        PertCpm instance = new PertCpm(activityRecord);
+        activityRecord.addActivity(vca1);
+        activityRecord.addActivity(fca1);
 
-            instance.createGraph();
+        instance.createGraph();
             /*
 
             Start ---- A -----Finish
@@ -114,21 +117,20 @@ public class PertCpmTest {
                    \   B  /
             */
 
-            int expectedNumEdges = 4; // 4 = Start --(1)--- vca1---(2)--- fca1 --- (3) ---- Finish
-            int resultNUmEdges = instance.getActivityGraph().numEdges();
+        int expectedNumEdges = 4; // 4 = Start --(1)--- vca1---(2)--- fca1 --- (3) ---- Finish
+        int resultNUmEdges = instance.getActivityGraph().numEdges();
 
-            assertEquals(expectedNumEdges, resultNUmEdges);
+        assertEquals(expectedNumEdges, resultNUmEdges);
 
-            int expectedNumVertices = 4; // 4 = Start(1)--- vca1(2)--- fca1(3) ----  Finish(4)
-            int resultNumVertices = instance.getActivityGraph().numVertices();
+        int expectedNumVertices = 4; // 4 = Start(1)--- vca1(2)--- fca1(3) ----  Finish(4)
+        int resultNumVertices = instance.getActivityGraph().numVertices();
 
-            assertEquals(expectedNumVertices, resultNumVertices);
+        assertEquals(expectedNumVertices, resultNumVertices);
 
 
-        }
+    }
 
     /**
-     *
      * @throws Exception
      */
     @Test
@@ -164,7 +166,6 @@ public class PertCpmTest {
 
 
     /**
-     *
      * @throws Exception
      */
     @Test
@@ -189,7 +190,7 @@ public class PertCpmTest {
                   \                                ^
                    \                             /
                     v                          /
-                      fca1(B)-------- > vca(E)
+                      fca1(B)-------- > vca(C)
             */
 
         System.out.println("Graph with no cycles should be validated ( return true )");
@@ -235,15 +236,21 @@ public class PertCpmTest {
 
                /*
 
-            Start --- > vca(A) ---- > vca(D )---->   Finish
-                  \
-                   \
-                    v
+            Start --- > vca(A) ---- > vca(D )----> Finish
+                  \                             ^
+                   \                          /
+                    v                       /
                       fca2(B)-------- > vca(C)
-                                        /  ^
-                                      /  /
-                                    v   /
-                                   fca(E)
+                        |
+                        |
+                        |
+                       (E)--------> (F)       (cycle between (E,F,G)
+                        ^            /
+                         \         /
+                          \      /
+                           \   v
+                            (G)
+
             */
 
 
@@ -256,19 +263,131 @@ public class PertCpmTest {
         instance.createGraph();
 
         boolean expected2 = false;
-        boolean result2 = instance.validateGraph();
+        boolean result2 = instance.createGraph();
 
         assertEquals(expected2, result2);
 
 
-        int expectedNumEdges = 7;
+        int expectedNumEdges = 10;
         int resultNUmEdges = instance.getActivityGraph().numEdges();
         assertEquals(expectedNumEdges, resultNUmEdges);
 
-        int expectedNumVertex = 7;
+        int expectedNumVertex = 9;
         int resultNumVertex = instance.getActivityGraph().numVertices();
         assertEquals(expectedNumVertex, resultNumVertex);
 
+    }
+
+    @Test
+    public void testAllPaths() throws Exception {
+        System.out.println("## allPaths Test ##");
+
+        ActivityRecord activityRecordFromFile = new ActivityRecord();
+        activityRecordFromFile.CreateActivitiesFromFileData("activities-test"); // importing graph from file
+
+        PertCpm instance = new PertCpm(activityRecordFromFile);
+
+        instance.createGraph();
+
+        ArrayList<Deque<Activity>> pathsDeque = new ArrayList<>();
+
+        ArrayList<Integer> expectAllPaths = instance.allPaths(pathsDeque);
+
+        ArrayList<Integer> expResult = new ArrayList<Integer>(Arrays.asList(2, 2));
+        assertEquals(expectAllPaths, expResult);
+
+    }
+
+
+    @Test
+    public void updateMatrix() throws Exception {
+        System.out.println("## updateMatrix Test ##");
+
+        ActivityRecord activityRecordFromFile = new ActivityRecord();
+        activityRecordFromFile.CreateActivitiesFromFileData("activities-example"); // importing graph from file
+
+        PertCpm instance = new PertCpm(activityRecordFromFile);
+
+        instance.createGraph();
+
+        Graph activityGraph = new Graph(true);
+
+        activityGraph = instance.getActivityGraph();
+
+        float[][] resultMatrix = new float[14][];   //matrix[0]=ES, matrix[1]=EF, matrix[2]=LS, matrix[3]=LF, matrix[4]=Slack.
+
+        int numVertices = activityGraph.numVertices();
+        resultMatrix[0] = new float[numVertices]; // ES : Early Start
+        resultMatrix[1] = new float[numVertices]; // EF : Early Finish
+        resultMatrix[2] = new float[numVertices]; // LS : Latest Start
+        resultMatrix[3] = new float[numVertices]; // LF : Latest Finish
+        resultMatrix[4] = new float[numVertices]; // Slack
+
+
+        resultMatrix = instance.updateMatrix();
+
+        System.out.println("\n -- Table with imported vertices and its parameters --- \n");
+        System.out.println("             ES | EF | LS | LF | Slack");
+        for (int i = 2; i < numVertices; i++) { // starts from 2 because 0 is start and 1 is Finish
+            System.out.print("Vertice " + instance.getActivityGraph().getVertex(i).getElement().getKey() + " : " + resultMatrix[0][i] + "  " + resultMatrix[1][i] + "  " + resultMatrix[2][i] + "  " + resultMatrix[3][i] + "  " + resultMatrix[4][i]);
+            System.out.println("");
+        }
+
+
+        // Test the first vertice A parameters values
+        float[][] expectedMatrix = new float[5][1];
+        expectedMatrix[0][0] = (float) 0.0;
+        expectedMatrix[1][0] = (float) 1.0;
+        expectedMatrix[2][0] = (float) 2.0;
+        expectedMatrix[3][0] = (float) 3.0;
+        expectedMatrix[4][0] = (float) 2.0;
+
+        assertEquals(expectedMatrix[0][0], resultMatrix[0][2], 0);
+        assertEquals(expectedMatrix[1][0], resultMatrix[1][2], 0);
+        assertEquals(expectedMatrix[2][0], resultMatrix[2][2], 0);
+        assertEquals(expectedMatrix[3][0], resultMatrix[3][2], 0);
+        assertEquals(expectedMatrix[4][0], resultMatrix[4][2], 0);
+
+        // Test the last vertice L parameters values
+        float[][] expectedMatrix2 = new float[5][1];
+        expectedMatrix2[0][0] = (float) 14.0;
+        expectedMatrix2[1][0] = (float) 16.0;
+        expectedMatrix2[2][0] = (float) 14.0;
+        expectedMatrix2[3][0] = (float) 16.0;
+        expectedMatrix2[4][0] = (float) 0.0;
+
+        assertEquals(expectedMatrix2[0][0], resultMatrix[0][13], 0); // position 14,array index 13 (last index)
+        assertEquals(expectedMatrix2[1][0], resultMatrix[1][13], 0);
+        assertEquals(expectedMatrix2[2][0], resultMatrix[2][13], 0);
+        assertEquals(expectedMatrix2[3][0], resultMatrix[3][13], 0);
+        assertEquals(expectedMatrix2[4][0], resultMatrix[4][13], 0);
+
+    }
+
+
+    @Test
+    public void testActivityByCompletion() throws Exception {
+
+        System.out.println("## activityByCompletion Test ##");
+
+        ActivityRecord activityRecordFromFile = new ActivityRecord();
+        activityRecordFromFile.CreateActivitiesFromFileData("activities-example"); // importing graph from file
+
+        PertCpm instance = new PertCpm(activityRecordFromFile);
+
+        instance.createGraph();
+
+        ArrayList<Activity> result = instance.activitiesByCompletion();
+
+        System.out.println("result : " + result);
+
+
+    }
+
+
+    @Test
+    public void testCriticaPaths() throws Exception {
+        System.out.println("## criticalPaths Test ##");
     }
 
 
