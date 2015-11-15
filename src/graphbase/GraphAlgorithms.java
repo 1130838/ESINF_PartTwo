@@ -131,7 +131,7 @@ public class GraphAlgorithms {
             }
         }
         visited[vOrig.getKey()] = false;
-        path.removeLast(); //duvidas
+        path.removeLast();
 
         //throw new UnsupportedOperationException("Not supported yet.");
     }

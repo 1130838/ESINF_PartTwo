@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
  */
 public class PertCpmTest {
 
+    // creating a activityRecord instance and 3 hardcoded Activities for test purposes
     ActivityRecord activityRecord = new ActivityRecord();
     VariableCostActivity vca1 = new VariableCostActivity("A", ActivityType.VCA, "ActivityOneVCA", 1, TimeUnit.day, 30, 112, null);
     FixedCostActivity fca1 = new FixedCostActivity("B", ActivityType.FCA, "ActivityTwoFCA", 4, TimeUnit.day, 2500, null);
@@ -44,8 +45,8 @@ public class PertCpmTest {
 
     /**
      * This test pretends to validate the add of an activity in the PertCPM instance (in the PertCPM graph).
-     * the PertCPM instance is unitialized in the contructor with 2 vertices (start and finish).
-     * When another vertice is added, the number of vertices should be 3.
+     * the PertCPM instance is initialized in the constructor with 2 vertices (start and finish).
+     * Thus, when another another vertice is added, the number of vertices should be 3 (2+1).
      *
      * @throws Exception
      */
@@ -62,12 +63,14 @@ public class PertCpmTest {
 
         // ---------
 
+        // add another one (activitie). the number of vertices should be 4
         instance.addActivity(fca1);
         int expected2 = 4; // 4 = start +  finish + vca1 + fca1
         int result2 = instance.getActivityGraph().numVertices();
         assertEquals(expected2, result2);
 
     }
+
 
     @Test
     public void testAddLink() throws Exception {
@@ -158,7 +161,6 @@ public class PertCpmTest {
         int resultNumVertices = instance.getActivityGraph().numVertices();
 
         assertEquals(expectedNumVertices, resultNumVertices);
-
 
     }
 
@@ -307,47 +309,122 @@ public class PertCpmTest {
 
         instance.createGraph();
 
+        ArrayList<Deque<Activity>> resultAllPaths = instance.allPaths();
 
-        ArrayList<Deque<Activity>> expectAllPaths = instance.allPaths();
+        System.out.println("\n--- all possible paths  (" + resultAllPaths.size() + ")-------");
 
-        ArrayList<String> resultVerticesPath1 = new ArrayList<>();
+        ArrayList<ArrayList<String>> allPathsListExpected = new ArrayList<ArrayList<String>>();
 
-        System.out.println("\n--- all possible paths  (" + expectAllPaths.size() + ")-------");
+        ArrayList<String> path1 = new ArrayList<>();
 
-        for (int i = 0; i < expectAllPaths.size(); i++) {
+        path1.add("Start");
+        path1.add("A");
+        path1.add("Finish");
+        allPathsListExpected.add(path1);
+
+        ArrayList<String> path2 = new ArrayList<>();
+        path2.add("Start");
+        path2.add("B");
+        path2.add("C");
+        path2.add("Finish");
+        allPathsListExpected.add(path2);
+
+
+        ArrayList<ArrayList<Activity>> resultVerticesPath = new ArrayList<>();
+        ArrayList<String> resultPathTemp = new ArrayList<>();
+
+        for (int i = 0; i < resultAllPaths.size(); i++) {
             System.out.println("## Path " + (i + 1) + " ##");
-            Iterator it = expectAllPaths.get(i).iterator();
+            Iterator it = resultAllPaths.get(i).iterator();
             while (it.hasNext()) {
-                Activity activity = (Activity) it.next();
-                resultVerticesPath1.add(activity.getKey());
-                System.out.println(activity.getKey());
+                Activity vertex = (Activity) it.next();
+                System.out.println(vertex.getKey());
+                resultPathTemp.add(vertex.getKey());
             }
+
+            resultVerticesPath.add((ArrayList<Activity>) resultPathTemp.clone()); // must be clone or else the reference will be cleared
+            resultPathTemp.clear();
             System.out.println("----------------------");
         }
 
+        // testing the paths
+        for (int i = 0; i < resultVerticesPath.size(); i++) {
+            for (int j = 0; j < resultVerticesPath.get(i).size(); j++) {
+                assertEquals(resultVerticesPath.get(i).get(j), resultVerticesPath.get(i).get(j));
+            }
+        }
 
-        // testing the first path content
-        ArrayList<String> expectedVerticesPath1 = new ArrayList<>();
-        expectedVerticesPath1.add("Start");
-        expectedVerticesPath1.add("A");
-        expectedVerticesPath1.add("D");
-        expectedVerticesPath1.add("Finish");
-        for (int i = 0; i < expectAllPaths.size(); i++) {
-            assertEquals(expectedVerticesPath1.get(i), resultVerticesPath1.get(i));
+        // testing the size of all possible paths
+        int expectedSize = 2;
+        int resultSize = resultVerticesPath.size();
+        assertEquals(expectedSize, resultSize);
+
+
+    }
+
+
+
+    @Test
+    public void testAllPathsFromFile() throws Exception {
+        System.out.println("## allPaths from File Test ##");
+
+            ActivityRecord activityRecordFromFile = new ActivityRecord();
+        activityRecordFromFile.CreateActivitiesFromFileData("activities-example"); // importing graph from file
+
+        PertCpm instance = new PertCpm(activityRecordFromFile);
+
+        instance.createGraph();
+
+        ArrayList<Deque<Activity>> resultAllPaths = instance.allPaths();
+
+        System.out.println("\n--- all possible paths  (" + resultAllPaths.size() + ")-------");
+
+        ArrayList<ArrayList<String>> allPathsListExpected = new ArrayList<ArrayList<String>>();
+
+        ArrayList<String> path1 = new ArrayList<>();
+
+        path1.add("Start");
+        path1.add("A");
+        path1.add("Finish");
+        allPathsListExpected.add(path1);
+
+        ArrayList<String> path2 = new ArrayList<>();
+        path2.add("Start");
+        path2.add("B");
+        path2.add("C");
+        path2.add("Finish");
+        allPathsListExpected.add(path2);
+
+
+        ArrayList<ArrayList<Activity>> resultVerticesPath = new ArrayList<>();
+        ArrayList<String> resultPathTemp = new ArrayList<>();
+
+        for (int i = 0; i < resultAllPaths.size(); i++) {
+            System.out.println("## Path " + (i + 1) + " ##");
+            Iterator it = resultAllPaths.get(i).iterator();
+            while (it.hasNext()) {
+                Activity vertex = (Activity) it.next();
+                System.out.print(vertex.getKey() + " ");
+                resultPathTemp.add(vertex.getKey());
+            }
+
+            resultVerticesPath.add((ArrayList<Activity>) resultPathTemp.clone()); // must be clone or else the reference will be cleared
+            resultPathTemp.clear();
+            System.out.println("");
         }
 
 
-        // testing the size of all possible paths 
-        int expectedSize = 2;
-        int resultSize = expectAllPaths.size();
+        // testing the size of all possible paths
+        int expectedSize = 11;
+        int resultSize = resultVerticesPath.size();
         assertEquals(expectedSize, resultSize);
 
     }
 
 
     @Test
-    public void updateMatrix() throws Exception {
-        System.out.println("## updateMatrix Test ##");
+    public void createParametersMatrix() throws Exception {
+        System.out.println("## createParametersMatrix Test ##");
 
         ActivityRecord activityRecordFromFile = new ActivityRecord();
         activityRecordFromFile.CreateActivitiesFromFileData("activities-example"); // importing graph from file
@@ -370,7 +447,7 @@ public class PertCpmTest {
         resultMatrix[4] = new float[numVertices]; // Slack
 
 
-        resultMatrix = instance.updateMatrix();
+        resultMatrix = instance.createParametersMatrix();
 
         System.out.println("\n -- Table with imported vertices and its parameters --- \n");
         System.out.println("             ES | EF | LS | LF | Slack");
@@ -456,12 +533,9 @@ public class PertCpmTest {
 
     }
 
-
     @Test
     public void testCriticaPaths() throws Exception {
         System.out.println("## criticalPaths Test ##");
-
-        System.out.println("## activityByCompletion Test ##");
 
         ActivityRecord activityRecordFromFile = new ActivityRecord();
         activityRecordFromFile.CreateActivitiesFromFileData("activities-example"); // importing graph from file
@@ -508,7 +582,6 @@ public class PertCpmTest {
                 }
             }
         }
-
     }
 
 

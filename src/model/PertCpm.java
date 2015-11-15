@@ -111,7 +111,7 @@ public class PertCpm {
                     && verticeTemp.getOutgoing().isEmpty() // if does not have outgoing vertices
                     ) {
                 addLink(activityTemp, finishActivity);
-                System.out.println("test: added activity " + activityTemp.getKey() + " to finish");
+               // System.out.println("test: added activity " + activityTemp.getKey() + " to finish");
             }
         }
 
@@ -244,7 +244,7 @@ public class PertCpm {
     }
 
 
-    public float[][] updateMatrix() {
+    public float[][] createParametersMatrix() {
 
         if (!isUpdated()) {
             matrix[0] = new float[activityGraph.numVertices()];
@@ -268,41 +268,30 @@ public class PertCpm {
         ArrayList<Deque<Activity>> pathsResult = GraphAlgorithms.allPaths(activityGraph, startActivity, finishActivity);
        return  pathsResult;
 
-
-       /* paths.addAll(allPaths);
-
-        //convert ArrayList<Deque<Activity>> in  ArrayList<Integer>
-        ArrayList<Integer> pathsArrayList = new ArrayList<>();
-
-        for (int i = 0; i < paths.size(); i++) {
-            pathsArrayList.add(i, paths.get(i).size() - 2);
-        }
-
-        return pathsArrayList;*/
     }
 
 
     public ArrayList<Activity> activitiesByCompletion() {
 
         if (!isUpdated()) {
-            updateMatrix();
+            createParametersMatrix();
         }
 
         ArrayList<Activity> completedActivitiesList = new ArrayList<>();
-        for (Vertex<Activity, Integer> vert : activityGraph.vertices()) {
+        for (Vertex<Activity, Integer> vertice : activityGraph.vertices()) {
             boolean flag = true;
-            if (vert.getKey() != 0 && vert.getKey() != 1) {
+            if (vertice.getKey() != 0 && vertice.getKey() != 1) { // to discard Start and Finish
                 if (completedActivitiesList.isEmpty()) {
-                    completedActivitiesList.add(vert.getElement());
+                    completedActivitiesList.add(vertice.getElement());
                 } else {
                     for (int i = 0; i < completedActivitiesList.size() && flag; i++) {
-                        if (matrix[1][vert.getKey()] < matrix[1][activityGraph.getVertex(completedActivitiesList.get(i)).getKey()]) {
-                            completedActivitiesList.add(i, vert.getElement());
+                        if (matrix[1][vertice.getKey()] < matrix[1][activityGraph.getVertex(completedActivitiesList.get(i)).getKey()]) {
+                            completedActivitiesList.add(i, vertice.getElement());
                             flag = false;
                         }
                     }
                     if (flag) {
-                        completedActivitiesList.add(vert.getElement());
+                        completedActivitiesList.add(vertice.getElement());
                     }
                 }
             }
@@ -314,7 +303,7 @@ public class PertCpm {
 
     public ArrayList<Deque<Activity>> criticalPaths() {
 
-        updateMatrix();
+        createParametersMatrix();
 
         ArrayList<Deque<Activity>> criticalPathsList = new ArrayList<>();
         Deque<Activity> path = new LinkedList<>();
