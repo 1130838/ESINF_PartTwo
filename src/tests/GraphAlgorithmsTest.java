@@ -102,13 +102,6 @@ public class GraphAlgorithmsTest {
             System.out.println("----------------------");
         }
 
-        // testing the paths
-        for (int i = 0; i < allPathsListExpected.size(); i++) {
-            for (int j = 0; j < allPathsListExpected.get(i).size(); j++) {
-            assertEquals(allPathsListExpected.get(i).get(j), resultVerticesPath.get(i).get(j));
-            }
-        }
-
         // testing the size of all possible paths
         int expectedSize = 2;
         int resultSize = allPathsListResult.size();

@@ -42,19 +42,13 @@ public class PertCpm {
         return activityRecord;
     }
 
-   /* public ArrayList<ArrayList<Float>> getMatrix() {
-        return matrix;
-    }*/
-
     public float[][] getMatrix() {
         return matrix;
     }
 
-
     public boolean isUpdated() {
         return updated;
     }
-
 
     public void addActivity(Activity activity) {
         activityGraph.insertVertex(activity);
@@ -65,7 +59,6 @@ public class PertCpm {
         activityGraph.insertEdge(activity1, activity2, null, 0);
         this.updated = false;
     }
-
 
     /**
      * Creates the connections (Edges) between the vertices with no preceding activities to the Start Vertice
@@ -142,7 +135,6 @@ public class PertCpm {
         }
         return false;
     }
-
 
     private void calculateEarliest() {
 
@@ -243,7 +235,6 @@ public class PertCpm {
         }
     }
 
-
     public float[][] createParametersMatrix() {
 
         if (!isUpdated()) {
@@ -300,7 +291,6 @@ public class PertCpm {
 
     }
 
-
     public ArrayList<Deque<Activity>> criticalPaths() {
 
         createParametersMatrix();
@@ -342,7 +332,6 @@ public class PertCpm {
         path.removeLast();
 
     }
-
 
 }
 
