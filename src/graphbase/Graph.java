@@ -163,7 +163,7 @@ public class Graph<V, E> implements GraphInterface<V, E> {
         //throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    // este nem faz sentido porque o Vertice já é adicionado na insertEdge()
+    // este nem faz sentido porque o Vertice ja e adicionado na insertEdge()
     public Vertex<V, E> insertVertex(V vInf) {
 
         Vertex<V, E> vert = getVertex(vInf);
@@ -176,7 +176,7 @@ public class Graph<V, E> implements GraphInterface<V, E> {
         return vert;
     }
 
-    // apenas com o parametros Edge(V1, V2), ele cria os Vertices ( os que nao ja existirem ) e cria a ligação entre eles.
+    // apenas com o parametros Edge(V1, V2), ele cria os Vertices ( os que nao ja existirem ) e cria a ligaï¿½ï¿½o entre eles.
     public Edge<V, E> insertEdge(V vOrig, V vDest, E eInf, double eWeight) {
 
         Vertex<V, E> vorig = getVertex(vOrig);

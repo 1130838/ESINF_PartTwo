@@ -128,7 +128,6 @@ public class PertCpmTest {
 
         assertEquals(expectedNumVertices, resultNumVertices);
 
-
     }
 
     /**
@@ -216,7 +215,6 @@ public class PertCpmTest {
 
     }
 
-
     @Test
     public void testValidateGraph2() throws Exception {
 
@@ -232,7 +230,6 @@ public class PertCpmTest {
         E,VCA,testing cycles,3,week,30,162,C
 
          */
-
 
                /*
 
@@ -252,7 +249,6 @@ public class PertCpmTest {
                             (G)
 
             */
-
 
         System.out.println("Graph with no cycles should NOT be validated ( return false )");
         ActivityRecord activityRecordFromFileWithCycles = new ActivityRecord();
@@ -363,7 +359,6 @@ public class PertCpmTest {
     }
 
 
-
     @Test
     public void testAllPathsFromFile() throws Exception {
         System.out.println("## allPaths from File Test ##");
@@ -420,7 +415,6 @@ public class PertCpmTest {
         assertEquals(expectedSize, resultSize);
 
     }
-
 
     @Test
     public void createParametersMatrix() throws Exception {

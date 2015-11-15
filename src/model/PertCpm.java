@@ -19,6 +19,10 @@ public class PertCpm {
     FixedCostActivity startActivity;
     FixedCostActivity finishActivity;
 
+    /**
+     * Constructor of PertCpm class
+     * @param activityRecord
+     */
     public PertCpm(ActivityRecord activityRecord) {
         this.activityGraph = new Graph(true);
         this.activityRecord = activityRecord;
@@ -50,11 +54,21 @@ public class PertCpm {
         return updated;
     }
 
+    /**
+     * Adds an activity by adding a vertice in the graph
+     * @param activity
+     */
     public void addActivity(Activity activity) {
         activityGraph.insertVertex(activity);
         this.updated = false;
     }
 
+
+    /**
+     * Insert and edge between 2 activitys adding a edge between 2 vertices
+     * @param activity1
+     * @param activity2
+     */
     public void addLink(Activity activity1, Activity activity2) {
         activityGraph.insertEdge(activity1, activity2, null, 0);
         this.updated = false;
@@ -114,6 +128,10 @@ public class PertCpm {
         return false;
     }
 
+    /**
+     * validates the graph with the condition to noy have cycles
+     * @return
+     */
     public boolean validateGraph() {
 
         if (!hasACycle()) {
@@ -122,7 +140,11 @@ public class PertCpm {
         return false;
     }
 
-    //if i can reach a vertex through of one of its outgoingVertices then there is a cycle
+    /**
+     * validates if graph has cycles towards the condition that if i can reach a
+     * vertex through of one of its outgoingVertices then there is a cycle.
+     * @return
+     */
     public boolean hasACycle() {
         Deque<Activity> pathReturned;
         for (Vertex<Activity, Integer> verticeActivity : activityGraph.vertices()) { // vertices return list of all vertices
@@ -136,6 +158,10 @@ public class PertCpm {
         return false;
     }
 
+    /**
+     * Calculate the ES (Earliest Start) and EF (Early Finish) parameters for all vertices of the created graph.
+     * The parameters are stored in the matrix.
+     */
     private void calculateEarliest() {
 
         Deque<Vertex<Activity, Integer>> dequeAux = new LinkedList<>();
@@ -182,6 +208,10 @@ public class PertCpm {
     }
 
 
+    /**
+     * Calculate the LS (Earliest Start) and LF (Latest Finish) parameteres for all vertices of the created graph.
+     * The parameters are stored in the matrix.
+     */
     private void calculateLatest() {
 
         Deque<Vertex<Activity, Integer>> dequeAux = new LinkedList<>();
@@ -228,13 +258,19 @@ public class PertCpm {
     }
 
 
+    /**
+     * Calculate the parameter Slack for all vertices in the graph
+     */
     private void calculateSlack() {
-
         for (int i = 0; i < matrix[4].length; i++) {
             matrix[4][i] = matrix[3][i] - matrix[1][i];
         }
     }
 
+    /**
+     * Creates the matrix which will store all the parameters (ES,EF,LS,LF and Slack)
+     * @return
+     */
     public float[][] createParametersMatrix() {
 
         if (!isUpdated()) {
@@ -254,6 +290,10 @@ public class PertCpm {
     }
 
 
+    /**
+     * Returns all possible path between a Begin vertice and a Final vertice
+     * @return
+     */
     public  ArrayList<Deque<Activity>> allPaths() {
 
         ArrayList<Deque<Activity>> pathsResult = GraphAlgorithms.allPaths(activityGraph, startActivity, finishActivity);
@@ -262,6 +302,10 @@ public class PertCpm {
     }
 
 
+    /**
+     * Returns the activities by its order of conclusion.
+     * @return
+     */
     public ArrayList<Activity> activitiesByCompletion() {
 
         if (!isUpdated()) {
@@ -288,9 +332,12 @@ public class PertCpm {
             }
         }
         return completedActivitiesList;
-
     }
 
+    /**
+     * Returns all the critical paths that might compromise the determined duration of the project
+     * @return
+     */
     public ArrayList<Deque<Activity>> criticalPaths() {
 
         createParametersMatrix();
@@ -307,6 +354,14 @@ public class PertCpm {
     }
 
 
+    /**
+     *  Recursive method to determine the critical paths that might compromise the determined duration of the project
+     * @param vOrig
+     * @param vDest
+     * @param visited
+     * @param path
+     * @param paths
+     */
     private void criticalPaths(Vertex<Activity, Integer> vOrig, Vertex<Activity, Integer> vDest,
                                boolean[] visited, Deque<Activity> path, ArrayList<Deque<Activity>> paths) {
 
